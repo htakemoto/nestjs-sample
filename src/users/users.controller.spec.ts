@@ -1,21 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { User } from './interfaces/user.interface';
+import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
-describe('Users Controller', () => {
+describe('UsersController', () => {
   let usersController: UsersController;
-  let usersService: UsersService
+  let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [UsersService]
+      providers: [UsersService, {
+        provide: getRepositoryToken(User),
+        useClass: Repository,
+      }],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
     usersController = module.get<UsersController>(UsersController);
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -23,37 +28,35 @@ describe('Users Controller', () => {
   });
 
   it('should return object after one create', async () => {
-    const user = { username: "htakemoto", age: 35 } as CreateUserDto;
-    const result = await usersController.create(user);
-    expect(result).toBeInstanceOf(Object);
+    const dto: CreateUserDto = { firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    const user1: User = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    jest.spyOn(usersService, 'create').mockResolvedValueOnce(user1);
+    expect(await usersController.create(dto)).toEqual(user1);
   });
 
-  it('should return array after one create operation', async () => {
-    const user = { username: "htakemoto", age: 35 } as CreateUserDto;
-    await usersController.create(user);
-    const result = await usersController.findAll();
-    expect(result.length).toBe(1);
+  it('should return all for findAll', async () => {
+    const user1: User = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    const user2: User = { id: 2, firstName: 'Bill', lastName: 'Gates', isActive: true };
+    jest.spyOn(usersService, 'findAll').mockResolvedValueOnce([user1, user2]);
+    expect(await usersController.findAll()).toEqual([user1, user2]);
   });
 
-  it('should return object after one create operation', async () => {
-    const user = { username: "htakemoto", age: 35 } as CreateUserDto;
-    await usersController.create(user);
-    const result = await usersController.findOne(1);
-    expect(result).toBeInstanceOf(Object);
+  it('should return one for findOne', async () => {
+    const user1: User = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    jest.spyOn(usersService, 'findOne').mockResolvedValueOnce(user1);
+    expect(await usersController.findOne(user1.id)).toEqual(user1);
   });
 
-  it('should update object', async () => {
-    let user = { username: "htakemoto", age: 35 } as CreateUserDto;
-    await usersController.create(user);
-    user.age = 18;
-    const result = await usersController.update(1, user as UpdateUserDto);
-    expect(result.age).toBe(18);
+  it('should return object after one update', async () => {
+    const dto: UpdateUserDto = { firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    const user1: User = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    jest.spyOn(usersService, 'update').mockResolvedValueOnce(user1);
+    expect(await usersController.update(1, dto)).toEqual(user1);
   });
 
-  it('should return null after removing object', async () => {
-    let user = { username: "htakemoto", age: 35 } as CreateUserDto;
-    await usersController.create(user);
-    const result = await usersController.remove(1);
-    expect(result).toBeNull;
+  it('should return null after one delete', async () => {
+    const user1: User = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true };
+    jest.spyOn(usersService, 'remove').mockResolvedValueOnce(null);
+    expect(await usersController.remove(user1.id)).toBeNull;
   });
 });

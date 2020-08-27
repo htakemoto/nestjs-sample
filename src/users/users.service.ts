@@ -1,38 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { User } from './interfaces/user.interface';
+import {
+  Injectable,
+  HttpStatus,
+  HttpException,
+  NotAcceptableException,
+  NotFoundException
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [];
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+  ) {}
 
-  create(user: User) {
-    user.id = this.users.length + 1
-    this.users.push(user);
-    return user;
+  async create(user: User): Promise<User> {
+    return await this.usersRepository.save(user);
   }
 
-  findAll(): User[] {
-    return this.users;
+  async findAll(): Promise<User[]> {
+    return await this.usersRepository.find();
   }
 
-  findOne(id: number): User {
-    return this.users.find( user => user.id === id );
-  }
-
-  update(user: User): User {
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].id === user.id) {
-        this.users[i] = user
-      }
+  async findOne(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
+    if (!user) {
+      throw new HttpException(`${id} is not found`, HttpStatus.NOT_FOUND);
+    } else {
+      return user
     }
-    return user;
   }
 
-  remove(id: number) {
-    for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].id === id) {
-        this.users.splice(i--, 1);
-      }
+  async update(user: User): Promise<User> {
+    const result = await this.usersRepository.findOne(user.id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return await this.usersRepository.save(user);
+  }
+
+  async remove(id: number): Promise<void> {
+    const result = await this.usersRepository.findOne(id);
+    if (!result) {
+      throw new NotFoundException();
+    } else {
+      await this.usersRepository.delete(id);
     }
   }
 }

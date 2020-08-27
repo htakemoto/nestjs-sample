@@ -19,6 +19,16 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
+      .expect({
+        "version":"1.0.0",
+        "environment":"local",
+        "database": {
+          "host":"127.0.0.1",
+          "port":5432,
+          "database":"postgres",
+          "username":"postgres",
+          "password":"postgres"
+        }
+      });
   });
 });
