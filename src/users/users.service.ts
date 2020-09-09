@@ -2,8 +2,7 @@ import {
   Injectable,
   HttpStatus,
   HttpException,
-  NotAcceptableException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,7 +28,7 @@ export class UsersService {
     if (!user) {
       throw new HttpException(`${id} is not found`, HttpStatus.NOT_FOUND);
     } else {
-      return user
+      return user;
     }
   }
 

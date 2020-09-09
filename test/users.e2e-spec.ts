@@ -10,11 +10,11 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication;
   let repository: Repository<User>;
 
-  process.env.DB_HOST='127.0.0.1';
-  process.env.DB_PORT='5432';
-  process.env.DB_DATABASE='postgres';
-  process.env.DB_USERNAME='postgres';
-  process.env.DB_PASSWORD='postgres';
+  process.env.DB_HOST = '127.0.0.1';
+  process.env.DB_PORT = '5432';
+  process.env.DB_DATABASE = 'postgres';
+  process.env.DB_USERNAME = 'postgres';
+  process.env.DB_PASSWORD = 'postgres';
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -55,7 +55,9 @@ describe('UsersController (e2e)', () => {
   });
 
   it('/users (GET)', () => {
-    const res = [{ id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true }];
+    const res = [
+      { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: true },
+    ];
     return request(app.getHttpServer())
       .get('/users')
       .expect(200)
@@ -71,7 +73,12 @@ describe('UsersController (e2e)', () => {
   });
 
   it('/users/1 (PUT)', () => {
-    const req = { id: 1, firstName: 'Steve', lastName: 'Jobs', isActive: false };
+    const req = {
+      id: 1,
+      firstName: 'Steve',
+      lastName: 'Jobs',
+      isActive: false,
+    };
     return request(app.getHttpServer())
       .put('/users/1')
       .send(req)

@@ -1,9 +1,13 @@
 import {
   Controller,
   HttpCode,
-  Get, Post, Put, Delete,
-  Param, Body,
-  ParseIntPipe
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { UsersService } from './users.service';
@@ -11,7 +15,6 @@ import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
-
   constructor(private usersService: UsersService) {}
 
   // POST /users
@@ -37,9 +40,12 @@ export class UsersController {
   // PUT /users/1
   // Body: {"firstName": "Steve", "lastName": "Jobs", "isActive": false}
   @Put(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
-    let user = updateUserDto as User
-    user.id = id
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = updateUserDto as User;
+    user.id = id;
     return await this.usersService.update(user);
   }
 
