@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ schema: process.env.DB_SCHEMA, name: 'user' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

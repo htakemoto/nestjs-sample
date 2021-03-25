@@ -2,91 +2,87 @@
 
 Sample project based on [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Requirements
-
-- Node.js
-- PostgreSQL
-
 ## Local Environment Setup
 
-1. Prepare your PostgreSQL on your local machine sach as using Docker
+### Requirements
 
-    ```bash
-    docker run --name postgres \
-        --rm \
-        -d \
-        -p 5432:5432 \
-        -e POSTGRES_PASSWORD=postgres \
-        postgres:11.7
-    ```
+- Docker
 
-    - `-d` option will run container in background<br>
-    - `--rm` option will automatically delete container once stopped
+### Run App
 
-    ```bash
-    # stop container
-    # (schema and table data will be removed by --rm option above)
-    docker container stop postgres
-    ```
-
-3. Create `.env` file in project root by providing the following configs:
+1. Create `.env` file in project root by providing the following configs:
 
     ```bash
     ENVIRONMENT=local
-    DB_HOST=127.0.0.1
+    DB_HOST=db
     DB_PORT=5432
-    DB_DATABASE=postgres
+    DB_DATABASE=localdb
+    DB_SCHEMA=sample
     DB_USERNAME=postgres
     DB_PASSWORD=postgres
     ```
 
-4. Install Node.js dependencies
+2. Run app
 
     ```bash
-    npm install
+    make start
     ```
 
-## Running the app
+    Open your browser and navigate to http://127.0.0.1:3000
 
-```bash
-# development
-npm run start
+    Note: database will be initialized based on `db/init.sql`
 
-# watch mode
-npm run start:dev
+    **Sample REST APIs**
 
-# production mode
-npm run start:prod
-```
+    ```bash
+    # Create an user
+    curl -X POST -H "Content-Type: application/json" -d '{"firstName": "Steve", "lastName": "Jobs", "isActive": true}' 127.0.0.1:3000/users
+    # Get all users
+    curl 127.0.0.1:3000/users
+    # Get an user
+    curl 127.0.0.1:3000/users/1
+    # Update an user
+    curl -X PUT -H "Content-Type: application/json" -d '{"firstName": "Steve", "lastName": "Jobs", "isActive": false}' 127.0.0.1:3000/users/1
+    # Remove an user
+    curl -X DELETE 127.0.0.1:3000/users/1
+    ```
 
-Open your browser and navigate to http://127.0.0.1:3000
+3. Check DB
 
-### Sample REST APIs
+    1. access http://127.0.0.1:8080 and login with the following:
 
-```bash
-# Create an user
-curl -X POST -H "Content-Type: application/json" -d '{"firstName": "Steve", "lastName": "Jobs", "isActive": true}' 127.0.0.1:3000/users
-# Get all users
-curl 127.0.0.1:3000/users
-# Get an user
-curl 127.0.0.1:3000/users/1
-# Update an user
-curl -X PUT -H "Content-Type: application/json" -d '{"firstName": "Steve", "lastName": "Jobs", "isActive": false}' 127.0.0.1:3000/users/1
-# Remove an user
-curl -X DELETE 127.0.0.1:3000/users/1
-```
+        - System: PostgreSQL
+        - Server: db
+        - Username: postgres
+        - Password: postgres
+        - Database: localdb
+
+    2. select `sample` in schema
+
+### Other Makefile Options
+
+    ```bash
+    # start with a fresh & clean docker container env
+    make init
+    # rebuild app container based on Dockerfile
+    make start-build
+    # stop all running containers
+    make stop
+    # stop and destroy container including network and volume data
+    make clean
+    ```
 
 ## Test
 
 ```bash
 # unit tests
-npm run test
-
-# e2e tests
-npm run test:e2e
+make test
 
 # test coverage
-npm run test:cov
+make test-cov
+
+# format codes
+make format
 ```
 
 ## Project Overview
@@ -113,6 +109,8 @@ Install **Nest CLI**
 ```bash
 npm i -g @nestjs/cli
 ```
+
+### NestJS Commands
 
 ```bash
 # create a controller

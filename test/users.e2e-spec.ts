@@ -10,9 +10,9 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication;
   let repository: Repository<User>;
 
-  process.env.DB_HOST = '127.0.0.1';
+  process.env.DB_HOST = 'db';
   process.env.DB_PORT = '5432';
-  process.env.DB_DATABASE = 'postgres';
+  process.env.DB_DATABASE = 'localdb';
   process.env.DB_USERNAME = 'postgres';
   process.env.DB_PASSWORD = 'postgres';
 

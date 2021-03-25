@@ -23,9 +23,9 @@ describe('AppController (e2e)', () => {
         version: '1.0.0',
         environment: 'local',
         database: {
-          host: '127.0.0.1',
+          host: 'db',
           port: 5432,
-          database: 'postgres',
+          database: 'localdb',
           username: 'postgres',
           password: 'postgres',
         },
